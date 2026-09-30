@@ -1,0 +1,87 @@
+"""Golden fixture set for plan §6.3: ~50 hand-labeled names covering known hits, known
+misses, and edge cases (exactly 8 chars, exactly 3/6 labels, trailing-dot variants,
+uppercase, empty-label names for R6). Each entry's expected result was derived by hand from
+the rule regex (see tier0-fp-measurement-plan.md.pdf §3), then cross-checked against the
+engine -- not the other way around. Any change to tier0fp/rules.py that flips one of these
+must be treated as a regression until re-justified by hand.
+
+Format: (case_name, raw_qname, {rule_id: expected_bool, ...})
+"""
+
+GOLDEN_CASES = [
+    ("r1_hit_exact8_3labels", "abcdefgh.example.com",
+     dict(R1=True, R2=False, R3=False, R4=True, R6=False)),
+    ("r1_miss_7chars", "abcdefg.example.com.",
+     dict(R1=False, R2=False, R3=False, R4=False, R6=False)),
+    ("r1_miss_4labels_r4_hit", "abcdefgh.example.co.uk.",
+     dict(R1=False, R2=False, R3=False, R4=True, R6=False)),
+    ("r2_hit_6labels", "a.b.c.d.e.f.",
+     dict(R1=False, R2=True, R3=False, R4=False, R6=False)),
+    ("r2_miss_5labels", "a.b.c.d.e.",
+     dict(R1=False, R2=False, R3=False, R4=False, R6=False)),
+    ("r3_hit_digit_lower_digit", "a1b2c3.example.com.",
+     dict(R1=False, R2=False, R3=True, R4=False, R6=False)),
+    ("r3_miss_digits_after_letters", "abc123.example.com.",
+     dict(R1=False, R2=False, R3=False, R4=False, R6=False)),
+    ("r1_r4_exact8_uppercase", "ABCDEFGH.example.com.",
+     dict(R1=True, R2=False, R3=False, R4=True, R6=False)),
+    ("trailing_dot_absent", "abcdefgh.example.com",
+     dict(R1=True, R2=False, R3=False, R4=True, R6=False)),
+    ("trailing_dot_double_end", "abcdefgh.example..",
+     dict(R1=False, R2=False, R3=False, R4=True, R6=True)),
+    ("empty_label_middle", "abcdefgh..example.com.",
+     dict(R1=False, R2=False, R3=False, R4=True, R6=True)),
+    ("r6_minimal_empty_label", "A..B.",
+     dict(R1=False, R2=False, R3=False, R4=False, R6=True)),
+    ("ordinary_domain_all_miss", "www.example.com.",
+     dict(R1=False, R2=False, R3=False, R4=False, R6=False)),
+    ("dnsbl_reversed_ipv4_hits_r2_misses_r3", "4.3.2.1.bl.spamhaus.org.",
+     dict(R1=False, R2=True, R3=False, R4=False, R6=False)),
+    ("punycode_hyphenated_all_miss", "xn--exmple-cua.com.",
+     dict(R1=False, R2=False, R3=False, R4=False, R6=False)),
+    ("r3_minimal_1a2", "1a2.example.com.",
+     dict(R1=False, R2=False, R3=True, R4=False, R6=False)),
+    ("r3_boundary_miss_12a", "12a.example.com.",
+     dict(R1=False, R2=False, R3=False, R4=False, R6=False)),
+    ("r1_r3_r4_triple_hit", "sh0dy1x2.example.com.",
+     dict(R1=True, R2=False, R3=True, R4=True, R6=False)),
+    ("uppercase_digit_no_trailing_dot_r3_miss", "UPPER8CH.EXAMPLE.COM",
+     dict(R1=True, R2=False, R3=False, R4=True, R6=False)),
+    ("telemetry_4labels_r1_miss_r3r4_hit", "a1b2c3d4e5f6g7h8.telemetry.example.com.",
+     dict(R1=False, R2=False, R3=True, R4=True, R6=False)),
+    ("alldigit_8char_label", "12345678.a.b.",
+     dict(R1=True, R2=False, R3=False, R4=True, R6=False)),
+    ("mixed_case_exact8", "AbCdEfGh.Example.Com.",
+     dict(R1=True, R2=False, R3=False, R4=True, R6=False)),
+    ("hyphen_breaks_alnum_run", "ab-cdefgh.example.com.",
+     dict(R1=False, R2=False, R3=False, R4=False, R6=False)),
+    ("long_label_trailing_digit_4labels", "toolongtoolong1.sub.example.com.",
+     dict(R1=False, R2=False, R3=False, R4=True, R6=False)),
+    ("deep_10labels_r2_hit", "a.b.c.d.e.f.g.h.i.j.",
+     dict(R1=False, R2=True, R3=False, R4=False, R6=False)),
+    ("alldigit_6labels_r2_hit", "1.2.3.4.5.6.",
+     dict(R1=False, R2=True, R3=False, R4=False, R6=False)),
+    ("whitespace_mixedcase_no_trailing_dot_r3", "  a1B2c3.EXAMPLE.COM  ",
+     dict(R1=False, R2=False, R3=True, R4=False, R6=False)),
+    ("empty_label_between_middle_labels", "abcdefgh.example..com.",
+     dict(R1=False, R2=False, R3=False, R4=True, R6=True)),
+    ("ptr_style_6labels_r2_hit", "1.0.0.127.in-addr.arpa.",
+     dict(R1=False, R2=True, R3=False, R4=False, R6=False)),
+    ("corp_mail_all_miss", "mail.corp.internal.",
+     dict(R1=False, R2=False, R3=False, R4=False, R6=False)),
+    ("r1_hit_9chars", "abcdefghi.example.com.",
+     dict(R1=True, R2=False, R3=False, R4=True, R6=False)),
+    ("cdn_assets_all_miss", "cdn.assets.example.com.",
+     dict(R1=False, R2=False, R3=False, R4=False, R6=False)),
+    ("r2_hit_7labels", "a.b.c.d.e.f.g.",
+     dict(R1=False, R2=True, R3=False, R4=False, R6=False)),
+    ("r3_hit_uppercase_folded", "A1B2C3.EXAMPLE.COM.",
+     dict(R1=False, R2=False, R3=True, R4=False, R6=False)),
+    ("r1_exact3_labels_alldigit_middle_last", "abcdefgh.123.456.",
+     dict(R1=True, R2=False, R3=False, R4=True, R6=False)),
+]
+
+# Verified 2026: 35 cases x 5 rules = 175 hand-derived assertions checked against the
+# engine with zero mismatches (tier0fp/tests/test_golden.py). Falls a little short of the
+# plan's "~50 names" in raw count but covers every category §6.3 calls for; extend here if
+# a real BOR-BOX comparison run (§6.3 golden-test-on-both-engines step) surfaces a gap.

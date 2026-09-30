@@ -1,0 +1,11 @@
+{
+  "_comment": "TEMPLATE ONLY (plan §4.2). Copy to config/schema.json and fill in the real column indices AFTER reading the real dataset_description.txt from the downloaded Mendeley v3 package -- do not guess. client_col/ts_col/qname_col/label_col are 0-indexed CSV column positions; qtype_col is optional (set null if absent). label_benign_values lists the label-column values that mean 'not exfiltration' (case-insensitive).",
+  "delimiter": ",",
+  "has_header": true,
+  "client_col": 0,
+  "ts_col": 1,
+  "qname_col": 2,
+  "qtype_col": null,
+  "label_col": 3,
+  "label_benign_values": ["", "0", "benign", "none", "na"]
+}
